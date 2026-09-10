@@ -20,7 +20,7 @@
     </a>
     <nav>
       <a href="#subjects">Subjects</a>
-      <a href="#resources"><span id="resourcesTitle">Resources</span></a>
+      <a href="#resources">Resources</a>
       <button class="profile-btn" id="profileBtn">Profile</button>
     </nav>
   </header>
@@ -54,11 +54,22 @@
       <div class="subject-grid" id="subjectGrid"></div>
     </section>
 
+    <section class="container hidden" id="chapterPanel">
+      <div class="section-head">
+        <div>
+          <div class="eyebrow">CHAPTERS</div>
+          <h2 id="chapterTitle">Chapters</h2>
+        </div>
+        <button class="back-btn" onclick="goAll()">← All resources</button>
+      </div>
+      <div class="chapter-grid" id="chapters"></div>
+    </section>
+
     <section class="container" id="resources">
       <div class="section-head">
         <div>
           <div class="eyebrow">DIRECTORY</div>
-          <h2>Featured resources</h2>
+          <h2 id="resourcesTitle">Featured resources</h2>
         </div>
         <span class="muted" id="resourceCount"></span>
       </div>
