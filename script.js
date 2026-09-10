@@ -1,112 +1,99 @@
+let saved = JSON.parse(localStorage.getItem("10hub_saved") || "[]");
+let completed = JSON.parse(localStorage.getItem("10hub_completed") || "[]");
 let activeFilter = "All";
-let searchTerm = "";
-const saved = JSON.parse(localStorage.getItem("10hub_saved") || "[]");
-const completed = JSON.parse(localStorage.getItem("10hub_completed") || "[]");
+let selectedSubject = "all";
+let selectedChapter = "All";
 
-const subjectGrid = document.getElementById("subjectGrid");
-const resourceGrid = document.getElementById("resourceGrid");
-const resourceCount = document.getElementById("resourceCount");
+const $ = (s) => document.querySelector(s);
 
 function renderSubjects(){
-  subjectGrid.innerHTML = subjects.map(s => `
-    <article class="subject-card" onclick="filterSubject('${s.id}')">
+  const el = $("#subjects");
+  if(!el) return;
+  el.innerHTML = subjects.map(s => `
+    <button class="subject-card" onclick="openSubject('${s.id}')">
       <div class="subject-icon">${s.icon}</div>
-      <h3>${s.name}</h3>
-      <p>${s.description}</p>
-    </article>`).join("");
+      <div><h3>${s.name}</h3><p>${s.description}</p></div>
+      <span class="arrow">→</span>
+    </button>`).join("");
 }
 
-function visibleResources(){
-  return resources.filter(r => {
-    const typeOK = activeFilter === "All" || r.type === activeFilter;
-    const text = `${r.title} ${r.chapter} ${r.description}`.toLowerCase();
-    const searchOK = !searchTerm || text.includes(searchTerm);
-    return typeOK && searchOK;
-  });
+function openSubject(id){
+  selectedSubject=id; selectedChapter="All"; activeFilter="All";
+  const s=subjects.find(x=>x.id===id);
+  $("#chapterTitle").textContent=s ? s.name+" Chapters" : "Chapters";
+  $("#chapters").innerHTML=getChapterList(id).map(ch=>`
+    <button class="chapter-pill" onclick="openChapter(${JSON.stringify(id)},${JSON.stringify(ch)})">${ch}</button>
+  `).join("");
+  $("#chapterPanel").classList.remove("hidden");
+  $("#resourcesTitle").textContent=(s?s.name:"")+" Resources";
+  renderResources();
+  $("#chapterPanel").scrollIntoView({behavior:"smooth",block:"start"});
+}
+
+function openChapter(subject, chapter){
+  selectedSubject=subject; selectedChapter=chapter;
+  $("#resourcesTitle").textContent=chapter+" Resources";
+  renderResources();
+  $("#resources").scrollIntoView({behavior:"smooth",block:"start"});
 }
 
 function renderResources(){
-  const list = visibleResources();
-  resourceCount.textContent = `${list.length} resource${list.length !== 1 ? "s" : ""}`;
-  if(!list.length){
-    resourceGrid.innerHTML = `<div class="muted" style="grid-column:1/-1;padding:30px 0">No resources found. Try another search or filter.</div>`;
-    return;
-  }
-  resourceGrid.innerHTML = list.map(r => `
+  const q=($("#search")?.value||"").toLowerCase().trim();
+  const list=resources.filter(r =>
+    (selectedSubject==="all" || r.subject==="all" || r.subject===selectedSubject) &&
+    (selectedChapter==="All" || r.chapter==="All" || r.chapter===selectedChapter) &&
+    (activeFilter==="All" || r.type===activeFilter) &&
+    (!q || (r.title+" "+r.description+" "+r.chapter).toLowerCase().includes(q))
+  );
+  const el=$("#resourceGrid");
+  if(!el) return;
+  el.innerHTML=list.length ? list.map(r=>`
     <article class="resource-card">
-      <div class="resource-top">
-        <span class="tag">${r.type}</span>
-        <button class="save ${saved.includes(r.id) ? "saved" : ""}" onclick="toggleSave('${r.id}')" title="Save">★</button>
-      </div>
-      <h3>${r.title}</h3>
-      <p>${r.description}</p>
-      <div class="resource-meta">
-        <span class="badge">${r.free ? "FREE" : "PAID"}</span>
-        <a class="open" href="${r.url}" target="_blank" rel="noopener">Open resource →</a>
-      </div>
-    </article>`).join("");
+      <div class="resource-top"><span class="tag">${r.type}</span><button class="save ${saved.includes(r.id)?"saved":""}" onclick="toggleSave('${r.id}')">${saved.includes(r.id)?"★":"☆"}</button></div>
+      <h3>${r.title}</h3><p>${r.description}</p>
+      <div class="resource-meta"><span>${r.chapter}</span><span>${r.free?"Free":"Paid"}</span></div>
+      <a class="resource-link" href="${r.url}" target="_blank" rel="noopener">Open resource ↗</a>
+    </article>`).join("") : `<div class="empty">No resources yet for this chapter. Add one to <b>data/resources.js</b>.</div>`;
   updateStats();
 }
 
-function filterSubject(id){
-  activeFilter = "All";
-  searchTerm = "";
-  document.getElementById("searchInput").value = "";
-  const subject = subjects.find(s => s.id === id);
-  const list = resources.filter(r => r.subject === id || r.subject === "all");
-  resourceGrid.innerHTML = list.length ? list.map(r => `
-    <article class="resource-card">
-      <div class="resource-top"><span class="tag">${r.type}</span><button class="save ${saved.includes(r.id) ? "saved" : ""}" onclick="toggleSave('${r.id}')">★</button></div>
-      <h3>${r.title}</h3><p>${r.description}</p>
-      <div class="resource-meta"><span class="badge">${r.free ? "FREE" : "PAID"}</span><a class="open" href="${r.url}" target="_blank" rel="noopener">Open resource →</a></div>
-    </article>`).join("") : `<div class="muted">Resources for ${subject.name} will appear here.</div>`;
-  resourceCount.textContent = `${subject.name} resources`;
-  document.getElementById("resources").scrollIntoView({behavior:"smooth"});
-}
-
 function toggleSave(id){
-  const i = saved.indexOf(id);
-  if(i >= 0) saved.splice(i,1); else saved.push(id);
-  localStorage.setItem("10hub_saved", JSON.stringify(saved));
+  saved=saved.includes(id)?saved.filter(x=>x!==id):[...saved,id];
+  localStorage.setItem("10hub_saved",JSON.stringify(saved));
   renderResources();
 }
 
 function updateStats(){
-  document.getElementById("bookmarkCount").textContent = saved.length;
-  document.getElementById("progressCount").textContent = completed.length;
+  if($("#savedCount")) $("#savedCount").textContent=saved.length;
+  if($("#completedCount")) $("#completedCount").textContent=completed.length;
 }
 
-document.getElementById("searchInput").addEventListener("input", e => {
-  searchTerm = e.target.value.trim().toLowerCase();
+function goAll(){
+  selectedSubject="all"; selectedChapter="All";
+  $("#chapterPanel")?.classList.add("hidden");
+  $("#resourcesTitle").textContent="All Resources";
   renderResources();
-});
+}
 
-document.querySelectorAll(".filter,.quick-links button").forEach(btn => {
-  btn.addEventListener("click", () => {
-    activeFilter = btn.dataset.filter;
-    document.querySelectorAll(".filter").forEach(b => b.classList.toggle("active", b.dataset.filter === activeFilter));
-    document.getElementById("resources").scrollIntoView({behavior:"smooth"});
-    renderResources();
+document.addEventListener("DOMContentLoaded",()=>{
+  renderSubjects(); renderResources(); updateStats();
+  $("#search")?.addEventListener("input",renderResources);
+  document.querySelectorAll(".filter-btn").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      document.querySelectorAll(".filter-btn").forEach(b=>b.classList.remove("active"));
+      btn.classList.add("active"); activeFilter=btn.dataset.filter; renderResources();
+    });
+  });
+  $("#allResources")?.addEventListener("click",goAll);
+  $("#profileBtn")?.addEventListener("click",()=>$("#profileModal")?.classList.remove("hidden"));
+  $("#closeModal")?.addEventListener("click",()=>$("#profileModal")?.classList.add("hidden"));
+  $("#saveProfile")?.addEventListener("click",()=>{
+    localStorage.setItem("10hub_name",$("#profileName").value.trim());
+    $("#profileModal")?.classList.add("hidden");
+  });
+  const name=localStorage.getItem("10hub_name");
+  if(name && $("#profileName")) $("#profileName").value=name;
+  document.addEventListener("keydown",e=>{
+    if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="k"){e.preventDefault();$("#search")?.focus();}
   });
 });
-
-document.addEventListener("keydown", e => {
-  if((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k"){
-    e.preventDefault(); document.getElementById("searchInput").focus();
-  }
-});
-
-const modal = document.getElementById("profileModal");
-document.getElementById("profileBtn").onclick = () => {
-  document.getElementById("nameInput").value = localStorage.getItem("10hub_name") || "";
-  modal.classList.remove("hidden");
-};
-document.getElementById("closeModal").onclick = () => modal.classList.add("hidden");
-document.getElementById("saveName").onclick = () => {
-  localStorage.setItem("10hub_name", document.getElementById("nameInput").value.trim());
-  modal.classList.add("hidden");
-};
-
-renderSubjects();
-renderResources();
-updateStats();
