@@ -1,3 +1,20 @@
+async function loadSupabaseResources() {
+  const { data, error } = await db
+    .from("resources")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("Supabase error:", error);
+    return;
+  }
+
+  if (data && data.length > 0) {
+    resources = [...data, ...resources];
+  }
+
+  renderResources();
+}
 let saved = JSON.parse(localStorage.getItem("10hub_saved") || "[]");
 let completed = JSON.parse(localStorage.getItem("10hub_completed") || "[]");
 let activeFilter = "All";
@@ -164,3 +181,4 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 });
+loadSupabaseResources();
