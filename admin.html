@@ -4,123 +4,622 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>10HUB Admin</title>
+  <title>10HUB // ADMIN</title>
 
   <link rel="stylesheet" href="style.css">
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase.js"></script>
+
+  <style>
+    /* ================================
+       10HUB ADMIN — CYBER TERMINAL
+       ================================ */
+
+    :root {
+      --admin-bg: #050807;
+      --admin-panel: #0a0f0d;
+      --admin-panel-2: #0d1411;
+      --admin-border: #18352a;
+      --admin-green: #39ff88;
+      --admin-green-dim: #1fae5d;
+      --admin-text: #d9ffe8;
+      --admin-muted: #6f907e;
+      --admin-red: #ff4d6d;
+      --admin-cyan: #4deeea;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at 50% -10%, rgba(57,255,136,.09), transparent 35%),
+        linear-gradient(rgba(57,255,136,.018) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(57,255,136,.018) 1px, transparent 1px),
+        var(--admin-bg);
+      background-size: auto, 32px 32px, 32px 32px, auto;
+      color: var(--admin-text);
+      font-family: "Courier New", monospace;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background: repeating-linear-gradient(
+        0deg,
+        rgba(255,255,255,.012),
+        rgba(255,255,255,.012) 1px,
+        transparent 1px,
+        transparent 4px
+      );
+      z-index: 999;
+    }
+
+    .admin-shell {
+      width: min(1100px, calc(100% - 30px));
+      margin: auto;
+      padding: 35px 0 60px;
+    }
+
+    /* HEADER */
+
+    .admin-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+      padding: 18px 22px;
+      border: 1px solid var(--admin-border);
+      background: rgba(10,15,13,.88);
+      box-shadow: 0 0 30px rgba(57,255,136,.035);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .brand-logo {
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--admin-green);
+      color: var(--admin-green);
+      font-weight: bold;
+      box-shadow: 0 0 15px rgba(57,255,136,.18);
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: 19px;
+      letter-spacing: 2px;
+    }
+
+    .brand p {
+      margin: 4px 0 0;
+      color: var(--admin-muted);
+      font-size: 11px;
+    }
+
+    .status {
+      color: var(--admin-green);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .status::before {
+      content: "●";
+      margin-right: 7px;
+      text-shadow: 0 0 10px var(--admin-green);
+    }
+
+    /* LOGIN */
+
+    #loginSection {
+      max-width: 520px;
+      margin: 70px auto;
+    }
+
+    .terminal-title {
+      margin-bottom: 22px;
+    }
+
+    .terminal-title .small {
+      color: var(--admin-muted);
+      font-size: 11px;
+    }
+
+    .terminal-title h2 {
+      margin: 8px 0;
+      color: var(--admin-green);
+      font-size: 25px;
+    }
+
+    .terminal-title p {
+      color: var(--admin-muted);
+      font-size: 12px;
+    }
+
+    .panel {
+      border: 1px solid var(--admin-border);
+      background: rgba(10,15,13,.92);
+      padding: 25px;
+      position: relative;
+      box-shadow: 0 15px 50px rgba(0,0,0,.35);
+    }
+
+    .panel::before {
+      content: "";
+      position: absolute;
+      top: -1px;
+      left: 20px;
+      width: 80px;
+      height: 1px;
+      background: var(--admin-green);
+      box-shadow: 0 0 12px var(--admin-green);
+    }
+
+    .panel-label {
+      color: var(--admin-green);
+      font-size: 11px;
+      margin-bottom: 20px;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      margin: 0 0 13px;
+      padding: 13px 14px;
+      border: 1px solid var(--admin-border);
+      outline: none;
+      background: #060a08;
+      color: var(--admin-text);
+      font-family: inherit;
+      font-size: 13px;
+      transition: .2s;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: var(--admin-green);
+      box-shadow: 0 0 12px rgba(57,255,136,.08);
+    }
+
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    button {
+      border: 1px solid var(--admin-green);
+      background: rgba(57,255,136,.06);
+      color: var(--admin-green);
+      padding: 12px 18px;
+      font-family: inherit;
+      font-weight: bold;
+      cursor: pointer;
+      transition: .2s;
+    }
+
+    button:hover {
+      background: var(--admin-green);
+      color: #031108;
+      box-shadow: 0 0 20px rgba(57,255,136,.18);
+    }
+
+    #loginStatus,
+    #status {
+      min-height: 18px;
+      color: var(--admin-muted);
+      font-size: 12px;
+    }
+
+    /* DASHBOARD */
+
+    #adminSection {
+      margin-top: 35px;
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+      margin: 20px 0;
+    }
+
+    .stat {
+      padding: 18px;
+      border: 1px solid var(--admin-border);
+      background: var(--admin-panel);
+    }
+
+    .stat-label {
+      color: var(--admin-muted);
+      font-size: 10px;
+      letter-spacing: 1px;
+    }
+
+    .stat-value {
+      color: var(--admin-green);
+      font-size: 25px;
+      margin-top: 8px;
+    }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .section-head h2 {
+      margin: 0;
+      font-size: 17px;
+    }
+
+    .logout {
+      border-color: var(--admin-red);
+      color: var(--admin-red);
+      background: transparent;
+    }
+
+    .logout:hover {
+      background: var(--admin-red);
+      color: white;
+      box-shadow: 0 0 20px rgba(255,77,109,.15);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0 15px;
+    }
+
+    .form-grid textarea,
+    .form-grid .full {
+      grid-column: 1 / -1;
+    }
+
+    .add-button {
+      width: 100%;
+      margin-top: 4px;
+      padding: 14px;
+      letter-spacing: 1px;
+    }
+
+    /* TERMINAL LOG */
+
+    .terminal-log {
+      margin-top: 18px;
+      border: 1px solid var(--admin-border);
+      background: #030604;
+      padding: 15px;
+      color: var(--admin-muted);
+      font-size: 11px;
+      line-height: 1.8;
+    }
+
+    .terminal-log span {
+      color: var(--admin-green);
+    }
+
+    @media (max-width: 700px) {
+
+      .admin-shell {
+        width: min(100% - 20px, 1100px);
+        padding-top: 15px;
+      }
+
+      .admin-header {
+        padding: 15px;
+      }
+
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .form-grid textarea,
+      .form-grid .full {
+        grid-column: auto;
+      }
+
+      .status {
+        display: none;
+      }
+    }
+  </style>
 </head>
 
 <body>
 
-<main class="container" style="max-width:900px;padding-top:60px;">
+<div class="admin-shell">
 
-  <div class="eyebrow">10HUB ADMIN</div>
-  <h1>Resource Manager</h1>
+  <!-- HEADER -->
+
+  <header class="admin-header">
+
+    <div class="brand">
+
+      <div class="brand-logo">
+        10
+      </div>
+
+      <div>
+        <h1>10HUB // ADMIN</h1>
+        <p>RESOURCE CONTROL TERMINAL</p>
+      </div>
+
+    </div>
+
+    <div class="status">
+      SYSTEM ONLINE
+    </div>
+
+  </header>
+
 
   <!-- LOGIN -->
-  <section id="loginSection" class="card" style="padding:24px;margin-top:25px;">
 
-    <h2>Admin Login</h2>
+  <section id="loginSection">
 
-    <input
-      id="email"
-      type="email"
-      placeholder="Admin email"
-    >
+    <div class="terminal-title">
 
-    <input
-      id="password"
-      type="password"
-      placeholder="Password"
-    >
+      <div class="small">
+        [ SECURE ACCESS ]
+      </div>
 
-    <button onclick="login()">Login</button>
+      <h2>ADMIN LOGIN_</h2>
 
-    <p id="loginStatus"></p>
+      <p>
+        Authentication required to access the 10HUB resource database.
+      </p>
+
+    </div>
+
+    <div class="panel">
+
+      <div class="panel-label">
+        &gt; ENTER CREDENTIALS
+      </div>
+
+      <input
+        id="email"
+        type="email"
+        placeholder="admin@email.com"
+      >
+
+      <input
+        id="password"
+        type="password"
+        placeholder="••••••••••••"
+      >
+
+      <button onclick="login()" style="width:100%;">
+        [ LOGIN ]
+      </button>
+
+      <p id="loginStatus"></p>
+
+    </div>
 
   </section>
 
 
-  <!-- ADMIN PANEL -->
+  <!-- ADMIN DASHBOARD -->
+
   <section id="adminSection" style="display:none;">
 
-    <section class="card" style="padding:24px;margin-top:25px;">
+    <div class="dashboard-grid">
 
-      <div style="display:flex;justify-content:space-between;align-items:center;">
-        <h2>Add Resource</h2>
-        <button onclick="logout()">Logout</button>
+      <div class="stat">
+        <div class="stat-label">DATABASE</div>
+        <div class="stat-value">ONLINE</div>
       </div>
 
-      <input
-        id="title"
-        placeholder="Resource title"
+      <div class="stat">
+        <div class="stat-label">AUTHENTICATION</div>
+        <div class="stat-value">ACTIVE</div>
+      </div>
+
+      <div class="stat">
+        <div class="stat-label">SYSTEM</div>
+        <div class="stat-value">10HUB</div>
+      </div>
+
+    </div>
+
+
+    <!-- ADD RESOURCE -->
+
+    <section class="panel">
+
+      <div class="section-head">
+
+        <div>
+          <div class="panel-label">
+            &gt; DATABASE / RESOURCES
+          </div>
+
+          <h2>ADD NEW RESOURCE</h2>
+        </div>
+
+        <button class="logout" onclick="logout()">
+          LOGOUT
+        </button>
+
+      </div>
+
+
+      <div class="form-grid">
+
+        <input
+          id="title"
+          class="full"
+          placeholder="Resource title"
+        >
+
+        <select id="subject">
+
+          <option value="science">
+            Science
+          </option>
+
+          <option value="maths">
+            Mathematics
+          </option>
+
+          <option value="sst">
+            Social Science
+          </option>
+
+          <option value="english">
+            English
+          </option>
+
+          <option value="ai">
+            Artificial Intelligence
+          </option>
+
+        </select>
+
+
+        <input
+          id="chapter"
+          placeholder="Chapter name"
+        >
+
+
+        <select id="type">
+
+          <option value="Video">
+            Video
+          </option>
+
+          <option value="Book">
+            Book
+          </option>
+
+          <option value="Website">
+            Website
+          </option>
+
+          <option value="PDF">
+            PDF
+          </option>
+
+          <option value="Notes">
+            Notes
+          </option>
+
+          <option value="Practice">
+            Practice
+          </option>
+
+        </select>
+
+
+        <select id="access">
+
+          <option value="Free">
+            Free
+          </option>
+
+          <option value="Paid">
+            Paid
+          </option>
+
+        </select>
+
+
+        <input
+          id="url"
+          class="full"
+          placeholder="https://example.com/resource"
+        >
+
+
+        <textarea
+          id="description"
+          class="full"
+          placeholder="Short description of the resource..."
+        ></textarea>
+
+      </div>
+
+
+      <button
+        class="add-button"
+        onclick="addResource()"
       >
-
-      <select id="subject">
-        <option value="science">Science</option>
-        <option value="math">Math</option>
-        <option value="sst">Social Science</option>
-        <option value="english">English</option>
-        <option value="ai">Artificial Intelligence</option>
-      </select>
-
-      <input
-        id="chapter"
-        placeholder="Chapter name"
-      >
-
-      <select id="type">
-        <option value="Video">Video</option>
-        <option value="Book">Book</option>
-        <option value="Website">Website</option>
-        <option value="PDF">PDF</option>
-        <option value="Notes">Notes</option>
-        <option value="Practice">Practice</option>
-      </select>
-
-      <select id="access">
-        <option value="Free">Free</option>
-        <option value="Paid">Paid</option>
-      </select>
-
-      <input
-        id="url"
-        placeholder="Resource URL"
-      >
-
-      <textarea
-        id="description"
-        placeholder="Short description"
-      ></textarea>
-
-      <button onclick="addResource()">Add Resource</button>
+        + ADD RESOURCE TO DATABASE
+      </button>
 
       <p id="status"></p>
 
     </section>
 
+
+    <!-- TERMINAL -->
+
+    <div class="terminal-log">
+
+      <div>
+        <span>10HUB@ADMIN:~$</span> connection established
+      </div>
+
+      <div>
+        <span>10HUB@DATABASE:~$</span> waiting for resource input...
+      </div>
+
+      <div>
+        <span>10HUB@SYSTEM:~$</span> secure mode enabled
+      </div>
+
+    </div>
+
   </section>
 
-</main>
+</div>
 
 
 <script>
 
 async function login() {
 
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value;
+  const email =
+    document.getElementById("email").value.trim();
 
-  const status = document.getElementById("loginStatus");
+  const password =
+    document.getElementById("password").value;
+
+  const status =
+    document.getElementById("loginStatus");
 
   if (!email || !password) {
-    status.textContent = "Enter your email and password.";
+
+    status.textContent =
+      "> ERROR: credentials required.";
+
     return;
   }
 
-  status.textContent = "Logging in...";
+  status.textContent =
+    "> authenticating...";
 
   const { data, error } =
     await db.auth.signInWithPassword({
@@ -129,12 +628,17 @@ async function login() {
     });
 
   if (error) {
+
     console.error(error);
-    status.textContent = "Login failed: " + error.message;
+
+    status.textContent =
+      "> ACCESS DENIED: " + error.message;
+
     return;
   }
 
-  status.textContent = "Login successful!";
+  status.textContent =
+    "> ACCESS GRANTED.";
 
   showAdmin();
 
@@ -143,9 +647,11 @@ async function login() {
 
 function showAdmin() {
 
-  document.getElementById("loginSection").style.display = "none";
+  document.getElementById("loginSection").style.display =
+    "none";
 
-  document.getElementById("adminSection").style.display = "block";
+  document.getElementById("adminSection").style.display =
+    "block";
 
 }
 
@@ -154,9 +660,11 @@ async function logout() {
 
   await db.auth.signOut();
 
-  document.getElementById("adminSection").style.display = "none";
+  document.getElementById("adminSection").style.display =
+    "none";
 
-  document.getElementById("loginSection").style.display = "block";
+  document.getElementById("loginSection").style.display =
+    "block";
 
 }
 
@@ -191,13 +699,14 @@ async function addResource() {
   if (!title || !chapter || !url) {
 
     status.textContent =
-      "Please fill title, chapter and URL.";
+      "> ERROR: title, chapter and URL required.";
 
     return;
   }
 
 
-  status.textContent = "Adding...";
+  status.textContent =
+    "> uploading resource...";
 
 
   const { data, error } =
@@ -220,14 +729,14 @@ async function addResource() {
     console.error(error);
 
     status.textContent =
-      "Error: " + error.message;
+      "> DATABASE ERROR: " + error.message;
 
     return;
   }
 
 
   status.textContent =
-    "✅ Resource added successfully!";
+    "> ✓ RESOURCE ADDED SUCCESSFULLY";
 
 
   document.getElementById("title").value = "";
