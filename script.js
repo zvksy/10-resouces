@@ -9,7 +9,7 @@ async function loadSupabaseResources() {
     return;
   }
 
-  if (data && data.length > 0) {
+  if (data) {
     resources = [...data, ...resources];
   }
 
