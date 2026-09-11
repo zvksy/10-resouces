@@ -12,9 +12,10 @@
   <script src="supabase.js"></script>
 
   <style>
-    /* ================================
+
+    /* =========================================
        10HUB ADMIN — CYBER TERMINAL
-       ================================ */
+       ========================================= */
 
     :root {
       --admin-bg: #050807;
@@ -36,320 +37,843 @@
     body {
       margin: 0;
       min-height: 100vh;
+
       background:
-        radial-gradient(circle at 50% -10%, rgba(57,255,136,.09), transparent 35%),
-        linear-gradient(rgba(57,255,136,.018) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(57,255,136,.018) 1px, transparent 1px),
+        radial-gradient(
+          circle at 50% -10%,
+          rgba(57,255,136,.09),
+          transparent 35%
+        ),
+        linear-gradient(
+          rgba(57,255,136,.018) 1px,
+          transparent 1px
+        ),
+        linear-gradient(
+          90deg,
+          rgba(57,255,136,.018) 1px,
+          transparent 1px
+        ),
         var(--admin-bg);
-      background-size: auto, 32px 32px, 32px 32px, auto;
+
+      background-size:
+        auto,
+        32px 32px,
+        32px 32px,
+        auto;
+
       color: var(--admin-text);
-      font-family: "Courier New", monospace;
+
+      font-family:
+        "Courier New",
+        monospace;
     }
 
     body::before {
       content: "";
+
       position: fixed;
       inset: 0;
+
       pointer-events: none;
-      background: repeating-linear-gradient(
-        0deg,
-        rgba(255,255,255,.012),
-        rgba(255,255,255,.012) 1px,
-        transparent 1px,
-        transparent 4px
-      );
+
+      background:
+        repeating-linear-gradient(
+          0deg,
+          rgba(255,255,255,.012),
+          rgba(255,255,255,.012) 1px,
+          transparent 1px,
+          transparent 4px
+        );
+
       z-index: 999;
     }
 
+
+    /* =========================================
+       MAIN SHELL
+       ========================================= */
+
     .admin-shell {
       width: min(1100px, calc(100% - 30px));
+
       margin: auto;
-      padding: 35px 0 60px;
+
+      padding:
+        35px 0 60px;
     }
 
-    /* HEADER */
+
+    /* =========================================
+       HEADER
+       ========================================= */
 
     .admin-header {
+
       display: flex;
-      justify-content: space-between;
-      align-items: center;
+
+      justify-content:
+        space-between;
+
+      align-items:
+        center;
+
       gap: 20px;
-      padding: 18px 22px;
-      border: 1px solid var(--admin-border);
-      background: rgba(10,15,13,.88);
-      box-shadow: 0 0 30px rgba(57,255,136,.035);
+
+      padding:
+        18px 22px;
+
+      border:
+        1px solid var(--admin-border);
+
+      background:
+        rgba(10,15,13,.88);
+
+      box-shadow:
+        0 0 30px
+        rgba(57,255,136,.035);
     }
 
     .brand {
+
       display: flex;
-      align-items: center;
+
+      align-items:
+        center;
+
       gap: 14px;
     }
 
     .brand-logo {
+
       width: 42px;
       height: 42px;
+
       display: grid;
-      place-items: center;
-      border: 1px solid var(--admin-green);
-      color: var(--admin-green);
-      font-weight: bold;
-      box-shadow: 0 0 15px rgba(57,255,136,.18);
+
+      place-items:
+        center;
+
+      border:
+        1px solid var(--admin-green);
+
+      color:
+        var(--admin-green);
+
+      font-weight:
+        bold;
+
+      box-shadow:
+        0 0 15px
+        rgba(57,255,136,.18);
     }
 
     .brand h1 {
-      margin: 0;
-      font-size: 19px;
-      letter-spacing: 2px;
+
+      margin:
+        0;
+
+      font-size:
+        19px;
+
+      letter-spacing:
+        2px;
     }
 
     .brand p {
-      margin: 4px 0 0;
-      color: var(--admin-muted);
-      font-size: 11px;
+
+      margin:
+        4px 0 0;
+
+      color:
+        var(--admin-muted);
+
+      font-size:
+        11px;
     }
 
     .status {
-      color: var(--admin-green);
-      font-size: 12px;
-      white-space: nowrap;
+
+      color:
+        var(--admin-green);
+
+      font-size:
+        12px;
+
+      white-space:
+        nowrap;
     }
 
     .status::before {
-      content: "●";
-      margin-right: 7px;
-      text-shadow: 0 0 10px var(--admin-green);
+
+      content:
+        "●";
+
+      margin-right:
+        7px;
+
+      text-shadow:
+        0 0 10px
+        var(--admin-green);
     }
 
-    /* LOGIN */
+
+    /* =========================================
+       LOGIN
+       ========================================= */
 
     #loginSection {
-      max-width: 520px;
-      margin: 70px auto;
+
+      max-width:
+        520px;
+
+      margin:
+        70px auto;
     }
 
     .terminal-title {
-      margin-bottom: 22px;
+
+      margin-bottom:
+        22px;
     }
 
     .terminal-title .small {
-      color: var(--admin-muted);
-      font-size: 11px;
+
+      color:
+        var(--admin-muted);
+
+      font-size:
+        11px;
     }
 
     .terminal-title h2 {
-      margin: 8px 0;
-      color: var(--admin-green);
-      font-size: 25px;
+
+      margin:
+        8px 0;
+
+      color:
+        var(--admin-green);
+
+      font-size:
+        25px;
     }
 
     .terminal-title p {
-      color: var(--admin-muted);
-      font-size: 12px;
+
+      color:
+        var(--admin-muted);
+
+      font-size:
+        12px;
     }
 
+
+    /* =========================================
+       PANELS
+       ========================================= */
+
     .panel {
-      border: 1px solid var(--admin-border);
-      background: rgba(10,15,13,.92);
-      padding: 25px;
-      position: relative;
-      box-shadow: 0 15px 50px rgba(0,0,0,.35);
+
+      border:
+        1px solid var(--admin-border);
+
+      background:
+        rgba(10,15,13,.92);
+
+      padding:
+        25px;
+
+      position:
+        relative;
+
+      box-shadow:
+        0 15px 50px
+        rgba(0,0,0,.35);
     }
 
     .panel::before {
-      content: "";
-      position: absolute;
-      top: -1px;
-      left: 20px;
-      width: 80px;
-      height: 1px;
-      background: var(--admin-green);
-      box-shadow: 0 0 12px var(--admin-green);
+
+      content:
+        "";
+
+      position:
+        absolute;
+
+      top:
+        -1px;
+
+      left:
+        20px;
+
+      width:
+        80px;
+
+      height:
+        1px;
+
+      background:
+        var(--admin-green);
+
+      box-shadow:
+        0 0 12px
+        var(--admin-green);
     }
 
     .panel-label {
-      color: var(--admin-green);
-      font-size: 11px;
-      margin-bottom: 20px;
+
+      color:
+        var(--admin-green);
+
+      font-size:
+        11px;
+
+      margin-bottom:
+        20px;
     }
+
+
+    /* =========================================
+       INPUTS
+       ========================================= */
 
     input,
     select,
     textarea {
-      width: 100%;
-      margin: 0 0 13px;
-      padding: 13px 14px;
-      border: 1px solid var(--admin-border);
-      outline: none;
-      background: #060a08;
-      color: var(--admin-text);
-      font-family: inherit;
-      font-size: 13px;
-      transition: .2s;
+
+      width:
+        100%;
+
+      margin:
+        0 0 13px;
+
+      padding:
+        13px 14px;
+
+      border:
+        1px solid var(--admin-border);
+
+      outline:
+        none;
+
+      background:
+        #060a08;
+
+      color:
+        var(--admin-text);
+
+      font-family:
+        inherit;
+
+      font-size:
+        13px;
+
+      transition:
+        .2s;
     }
 
     input:focus,
     select:focus,
     textarea:focus {
-      border-color: var(--admin-green);
-      box-shadow: 0 0 12px rgba(57,255,136,.08);
+
+      border-color:
+        var(--admin-green);
+
+      box-shadow:
+        0 0 12px
+        rgba(57,255,136,.08);
     }
 
     textarea {
-      min-height: 100px;
-      resize: vertical;
+
+      min-height:
+        100px;
+
+      resize:
+        vertical;
     }
 
+
+    /* =========================================
+       BUTTONS
+       ========================================= */
+
     button {
-      border: 1px solid var(--admin-green);
-      background: rgba(57,255,136,.06);
-      color: var(--admin-green);
-      padding: 12px 18px;
-      font-family: inherit;
-      font-weight: bold;
-      cursor: pointer;
-      transition: .2s;
+
+      border:
+        1px solid var(--admin-green);
+
+      background:
+        rgba(57,255,136,.06);
+
+      color:
+        var(--admin-green);
+
+      padding:
+        12px 18px;
+
+      font-family:
+        inherit;
+
+      font-weight:
+        bold;
+
+      cursor:
+        pointer;
+
+      transition:
+        .2s;
     }
 
     button:hover {
-      background: var(--admin-green);
-      color: #031108;
-      box-shadow: 0 0 20px rgba(57,255,136,.18);
+
+      background:
+        var(--admin-green);
+
+      color:
+        #031108;
+
+      box-shadow:
+        0 0 20px
+        rgba(57,255,136,.18);
     }
 
     #loginStatus,
     #status {
-      min-height: 18px;
-      color: var(--admin-muted);
-      font-size: 12px;
+
+      min-height:
+        18px;
+
+      color:
+        var(--admin-muted);
+
+      font-size:
+        12px;
     }
 
-    /* DASHBOARD */
+
+    /* =========================================
+       DASHBOARD
+       ========================================= */
 
     #adminSection {
-      margin-top: 35px;
+
+      margin-top:
+        35px;
     }
 
     .dashboard-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 15px;
-      margin: 20px 0;
+
+      display:
+        grid;
+
+      grid-template-columns:
+        repeat(3, 1fr);
+
+      gap:
+        15px;
+
+      margin:
+        20px 0;
     }
 
     .stat {
-      padding: 18px;
-      border: 1px solid var(--admin-border);
-      background: var(--admin-panel);
+
+      padding:
+        18px;
+
+      border:
+        1px solid var(--admin-border);
+
+      background:
+        var(--admin-panel);
     }
 
     .stat-label {
-      color: var(--admin-muted);
-      font-size: 10px;
-      letter-spacing: 1px;
+
+      color:
+        var(--admin-muted);
+
+      font-size:
+        10px;
+
+      letter-spacing:
+        1px;
     }
 
     .stat-value {
-      color: var(--admin-green);
-      font-size: 25px;
-      margin-top: 8px;
+
+      color:
+        var(--admin-green);
+
+      font-size:
+        25px;
+
+      margin-top:
+        8px;
     }
 
+
+    /* =========================================
+       SECTION HEADER
+       ========================================= */
+
     .section-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 15px;
-      margin-bottom: 20px;
+
+      display:
+        flex;
+
+      justify-content:
+        space-between;
+
+      align-items:
+        center;
+
+      gap:
+        15px;
+
+      margin-bottom:
+        20px;
     }
 
     .section-head h2 {
-      margin: 0;
-      font-size: 17px;
+
+      margin:
+        0;
+
+      font-size:
+        17px;
     }
 
+
+    /* =========================================
+       LOGOUT
+       ========================================= */
+
     .logout {
-      border-color: var(--admin-red);
-      color: var(--admin-red);
-      background: transparent;
+
+      border-color:
+        var(--admin-red);
+
+      color:
+        var(--admin-red);
+
+      background:
+        transparent;
     }
 
     .logout:hover {
-      background: var(--admin-red);
-      color: white;
-      box-shadow: 0 0 20px rgba(255,77,109,.15);
+
+      background:
+        var(--admin-red);
+
+      color:
+        white;
+
+      box-shadow:
+        0 0 20px
+        rgba(255,77,109,.15);
     }
 
+
+    /* =========================================
+       RESOURCE FORM
+       ========================================= */
+
     .form-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0 15px;
+
+      display:
+        grid;
+
+      grid-template-columns:
+        1fr 1fr;
+
+      gap:
+        0 15px;
     }
 
     .form-grid textarea,
     .form-grid .full {
-      grid-column: 1 / -1;
+
+      grid-column:
+        1 / -1;
     }
 
     .add-button {
-      width: 100%;
-      margin-top: 4px;
-      padding: 14px;
-      letter-spacing: 1px;
+
+      width:
+        100%;
+
+      margin-top:
+        4px;
+
+      padding:
+        14px;
+
+      letter-spacing:
+        1px;
     }
 
-    /* TERMINAL LOG */
+
+    /* =========================================
+       RESOURCE DATABASE
+       ========================================= */
+
+    .resource-admin-list {
+
+      display:
+        flex;
+
+      flex-direction:
+        column;
+
+      gap:
+        10px;
+    }
+
+    .resource-item {
+
+      border:
+        1px solid var(--admin-border);
+
+      background:
+        #060a08;
+
+      padding:
+        17px;
+
+      transition:
+        .2s;
+    }
+
+    .resource-item:hover {
+
+      border-color:
+        var(--admin-green);
+
+      background:
+        #08100c;
+
+      box-shadow:
+        0 0 18px
+        rgba(57,255,136,.04);
+    }
+
+    .resource-row {
+
+      display:
+        flex;
+
+      justify-content:
+        space-between;
+
+      align-items:
+        flex-start;
+
+      gap:
+        15px;
+    }
+
+    .resource-title {
+
+      color:
+        var(--admin-green);
+
+      font-size:
+        14px;
+
+      font-weight:
+        bold;
+    }
+
+    .resource-meta {
+
+      color:
+        var(--admin-muted);
+
+      font-size:
+        11px;
+
+      margin-top:
+        7px;
+
+      line-height:
+        1.6;
+    }
+
+    .resource-access {
+
+      color:
+        var(--admin-cyan);
+
+      font-size:
+        10px;
+
+      white-space:
+        nowrap;
+
+      border:
+        1px solid
+        rgba(77,238,234,.25);
+
+      padding:
+        4px 7px;
+    }
+
+    .resource-description {
+
+      color:
+        var(--admin-muted);
+
+      font-size:
+        11px;
+
+      margin-top:
+        12px;
+
+      line-height:
+        1.5;
+    }
+
+    .resource-url {
+
+      display:
+        inline-block;
+
+      margin-top:
+        10px;
+
+      color:
+        var(--admin-cyan);
+
+      font-size:
+        10px;
+
+      text-decoration:
+        none;
+
+      word-break:
+        break-all;
+    }
+
+    .resource-url:hover {
+
+      text-decoration:
+        underline;
+    }
+
+    .database-empty {
+
+      color:
+        var(--admin-muted);
+
+      font-size:
+        12px;
+
+      padding:
+        20px 0;
+    }
+
+
+    /* =========================================
+       TERMINAL LOG
+       ========================================= */
 
     .terminal-log {
-      margin-top: 18px;
-      border: 1px solid var(--admin-border);
-      background: #030604;
-      padding: 15px;
-      color: var(--admin-muted);
-      font-size: 11px;
-      line-height: 1.8;
+
+      margin-top:
+        18px;
+
+      border:
+        1px solid var(--admin-border);
+
+      background:
+        #030604;
+
+      padding:
+        15px;
+
+      color:
+        var(--admin-muted);
+
+      font-size:
+        11px;
+
+      line-height:
+        1.8;
     }
 
     .terminal-log span {
-      color: var(--admin-green);
+
+      color:
+        var(--admin-green);
     }
+
+
+    /* =========================================
+       MOBILE
+       ========================================= */
 
     @media (max-width: 700px) {
 
       .admin-shell {
-        width: min(100% - 20px, 1100px);
-        padding-top: 15px;
+
+        width:
+          min(100% - 20px, 1100px);
+
+        padding-top:
+          15px;
       }
 
       .admin-header {
-        padding: 15px;
+
+        padding:
+          15px;
       }
 
       .dashboard-grid {
-        grid-template-columns: 1fr;
+
+        grid-template-columns:
+          1fr;
       }
 
       .form-grid {
-        grid-template-columns: 1fr;
+
+        grid-template-columns:
+          1fr;
       }
 
       .form-grid textarea,
       .form-grid .full {
-        grid-column: auto;
+
+        grid-column:
+          auto;
       }
 
       .status {
-        display: none;
+
+        display:
+          none;
       }
+
+      .resource-row {
+
+        flex-direction:
+          column;
+      }
+
     }
+
   </style>
 </head>
+
 
 <body>
 
 <div class="admin-shell">
 
-  <!-- HEADER -->
+
+  <!-- =====================================
+       HEADER
+       ===================================== -->
 
   <header class="admin-header">
 
@@ -360,11 +884,19 @@
       </div>
 
       <div>
-        <h1>10HUB // ADMIN</h1>
-        <p>RESOURCE CONTROL TERMINAL</p>
+
+        <h1>
+          10HUB // ADMIN
+        </h1>
+
+        <p>
+          RESOURCE CONTROL TERMINAL
+        </p>
+
       </div>
 
     </div>
+
 
     <div class="status">
       SYSTEM ONLINE
@@ -373,7 +905,10 @@
   </header>
 
 
-  <!-- LOGIN -->
+
+  <!-- =====================================
+       LOGIN
+       ===================================== -->
 
   <section id="loginSection">
 
@@ -383,13 +918,17 @@
         [ SECURE ACCESS ]
       </div>
 
-      <h2>ADMIN LOGIN_</h2>
+      <h2>
+        ADMIN LOGIN_
+      </h2>
 
       <p>
-        Authentication required to access the 10HUB resource database.
+        Authentication required to access
+        the 10HUB resource database.
       </p>
 
     </div>
+
 
     <div class="panel">
 
@@ -397,11 +936,13 @@
         &gt; ENTER CREDENTIALS
       </div>
 
+
       <input
         id="email"
         type="email"
         placeholder="admin@email.com"
       >
+
 
       <input
         id="password"
@@ -409,9 +950,14 @@
         placeholder="••••••••••••"
       >
 
-      <button onclick="login()" style="width:100%;">
+
+      <button
+        onclick="login()"
+        style="width:100%;"
+      >
         [ LOGIN ]
       </button>
+
 
       <p id="loginStatus"></p>
 
@@ -420,58 +966,112 @@
   </section>
 
 
-  <!-- ADMIN DASHBOARD -->
 
-  <section id="adminSection" style="display:none;">
+  <!-- =====================================
+       ADMIN DASHBOARD
+       ===================================== -->
+
+  <section
+    id="adminSection"
+    style="display:none;"
+  >
+
+
+    <!-- DASHBOARD STATS -->
 
     <div class="dashboard-grid">
 
-      <div class="stat">
-        <div class="stat-label">DATABASE</div>
-        <div class="stat-value">ONLINE</div>
-      </div>
 
       <div class="stat">
-        <div class="stat-label">AUTHENTICATION</div>
-        <div class="stat-value">ACTIVE</div>
+
+        <div class="stat-label">
+          DATABASE
+        </div>
+
+        <div
+          class="stat-value"
+          id="databaseStatus"
+        >
+          ONLINE
+        </div>
+
       </div>
 
+
       <div class="stat">
-        <div class="stat-label">SYSTEM</div>
-        <div class="stat-value">10HUB</div>
+
+        <div class="stat-label">
+          AUTHENTICATION
+        </div>
+
+        <div class="stat-value">
+          ACTIVE
+        </div>
+
       </div>
+
+
+      <div class="stat">
+
+        <div class="stat-label">
+          RESOURCES
+        </div>
+
+        <div
+          class="stat-value"
+          id="resourceCountAdmin"
+        >
+          0
+        </div>
+
+      </div>
+
 
     </div>
 
 
-    <!-- ADD RESOURCE -->
+
+    <!-- =================================
+         ADD RESOURCE
+         ================================= -->
 
     <section class="panel">
 
       <div class="section-head">
 
         <div>
+
           <div class="panel-label">
             &gt; DATABASE / RESOURCES
           </div>
 
-          <h2>ADD NEW RESOURCE</h2>
+          <h2>
+            ADD NEW RESOURCE
+          </h2>
+
         </div>
 
-        <button class="logout" onclick="logout()">
+
+        <button
+          class="logout"
+          onclick="logout()"
+        >
           LOGOUT
         </button>
 
       </div>
 
 
+
       <div class="form-grid">
+
 
         <input
           id="title"
           class="full"
           placeholder="Resource title"
         >
+
 
         <select id="subject">
 
@@ -559,6 +1159,7 @@
           placeholder="Short description of the resource..."
         ></textarea>
 
+
       </div>
 
 
@@ -569,46 +1170,122 @@
         + ADD RESOURCE TO DATABASE
       </button>
 
+
       <p id="status"></p>
 
     </section>
 
 
-    <!-- TERMINAL -->
+
+    <!-- =================================
+         RESOURCE DATABASE
+         ================================= -->
+
+    <section
+      class="panel"
+      style="margin-top:20px;"
+    >
+
+      <div class="section-head">
+
+        <div>
+
+          <div class="panel-label">
+            &gt; DATABASE / RESOURCE_INDEX
+          </div>
+
+          <h2>
+            RESOURCE DATABASE
+          </h2>
+
+        </div>
+
+
+        <button
+          onclick="loadAdminResources()"
+        >
+          ↻ REFRESH
+        </button>
+
+      </div>
+
+
+      <div
+        id="resourceAdminList"
+        class="resource-admin-list"
+      >
+
+        <div class="database-empty">
+          &gt; loading database...
+        </div>
+
+      </div>
+
+    </section>
+
+
+
+    <!-- =================================
+         TERMINAL LOG
+         ================================= -->
 
     <div class="terminal-log">
 
       <div>
-        <span>10HUB@ADMIN:~$</span> connection established
+        <span>10HUB@ADMIN:~$</span>
+        connection established
       </div>
 
       <div>
-        <span>10HUB@DATABASE:~$</span> waiting for resource input...
+        <span>10HUB@DATABASE:~$</span>
+        resource index loaded
       </div>
 
       <div>
-        <span>10HUB@SYSTEM:~$</span> secure mode enabled
+        <span>10HUB@SYSTEM:~$</span>
+        secure mode enabled
+      </div>
+
+      <div id="terminalStatus">
+        <span>10HUB@SYSTEM:~$</span>
+        waiting for input...
       </div>
 
     </div>
+
 
   </section>
 
 </div>
 
 
+
 <script>
+
+
+/* =========================================
+   LOGIN
+   ========================================= */
 
 async function login() {
 
   const email =
-    document.getElementById("email").value.trim();
+    document
+      .getElementById("email")
+      .value
+      .trim();
+
 
   const password =
-    document.getElementById("password").value;
+    document
+      .getElementById("password")
+      .value;
+
 
   const status =
-    document.getElementById("loginStatus");
+    document
+      .getElementById("loginStatus");
+
 
   if (!email || !password) {
 
@@ -618,82 +1295,152 @@ async function login() {
     return;
   }
 
+
   status.textContent =
     "> authenticating...";
 
+
   const { data, error } =
     await db.auth.signInWithPassword({
+
       email: email,
+
       password: password
+
     });
+
 
   if (error) {
 
     console.error(error);
 
     status.textContent =
-      "> ACCESS DENIED: " + error.message;
+      "> ACCESS DENIED: " +
+      error.message;
 
     return;
   }
 
+
   status.textContent =
     "> ACCESS GRANTED.";
+
 
   showAdmin();
 
 }
 
 
+
+/* =========================================
+   SHOW ADMIN
+   ========================================= */
+
 function showAdmin() {
 
-  document.getElementById("loginSection").style.display =
-    "none";
+  document
+    .getElementById("loginSection")
+    .style.display = "none";
 
-  document.getElementById("adminSection").style.display =
-    "block";
+
+  document
+    .getElementById("adminSection")
+    .style.display = "block";
+
+
+  loadAdminResources();
 
 }
 
+
+
+/* =========================================
+   LOGOUT
+   ========================================= */
 
 async function logout() {
 
   await db.auth.signOut();
 
-  document.getElementById("adminSection").style.display =
-    "none";
 
-  document.getElementById("loginSection").style.display =
-    "block";
+  document
+    .getElementById("adminSection")
+    .style.display = "none";
+
+
+  document
+    .getElementById("loginSection")
+    .style.display = "block";
+
+
+  document
+    .getElementById("email")
+    .value = "";
+
+
+  document
+    .getElementById("password")
+    .value = "";
 
 }
 
 
+
+/* =========================================
+   ADD RESOURCE
+   ========================================= */
+
 async function addResource() {
 
   const title =
-    document.getElementById("title").value.trim();
+    document
+      .getElementById("title")
+      .value
+      .trim();
+
 
   const subject =
-    document.getElementById("subject").value;
+    document
+      .getElementById("subject")
+      .value;
+
 
   const chapter =
-    document.getElementById("chapter").value.trim();
+    document
+      .getElementById("chapter")
+      .value
+      .trim();
+
 
   const type =
-    document.getElementById("type").value;
+    document
+      .getElementById("type")
+      .value;
+
 
   const access =
-    document.getElementById("access").value;
+    document
+      .getElementById("access")
+      .value;
+
 
   const url =
-    document.getElementById("url").value.trim();
+    document
+      .getElementById("url")
+      .value
+      .trim();
+
 
   const description =
-    document.getElementById("description").value.trim();
+    document
+      .getElementById("description")
+      .value
+      .trim();
+
 
   const status =
-    document.getElementById("status");
+    document
+      .getElementById("status");
 
 
   if (!title || !chapter || !url) {
@@ -713,13 +1460,21 @@ async function addResource() {
     await db
       .from("resources")
       .insert({
+
         title: title,
+
         subject: subject,
+
         chapter: chapter,
+
         type: type,
+
         access: access,
+
         url: url,
+
         description: description
+
       })
       .select();
 
@@ -729,7 +1484,8 @@ async function addResource() {
     console.error(error);
 
     status.textContent =
-      "> DATABASE ERROR: " + error.message;
+      "> DATABASE ERROR: " +
+      error.message;
 
     return;
   }
@@ -739,10 +1495,203 @@ async function addResource() {
     "> ✓ RESOURCE ADDED SUCCESSFULLY";
 
 
-  document.getElementById("title").value = "";
-  document.getElementById("chapter").value = "";
-  document.getElementById("url").value = "";
-  document.getElementById("description").value = "";
+  document
+    .getElementById("title")
+    .value = "";
+
+
+  document
+    .getElementById("chapter")
+    .value = "";
+
+
+  document
+    .getElementById("url")
+    .value = "";
+
+
+  document
+    .getElementById("description")
+    .value = "";
+
+
+  document
+    .getElementById("terminalStatus")
+    .innerHTML =
+      "<span>10HUB@DATABASE:~$</span> resource added successfully";
+
+
+  loadAdminResources();
+
+}
+
+
+
+/* =========================================
+   LOAD RESOURCES
+   ========================================= */
+
+async function loadAdminResources() {
+
+  const container =
+    document
+      .getElementById("resourceAdminList");
+
+
+  container.innerHTML =
+    '<div class="database-empty">&gt; querying database...</div>';
+
+
+  const { data, error } =
+    await db
+      .from("resources")
+      .select("*")
+      .order(
+        "created_at",
+        {
+          ascending: false
+        }
+      );
+
+
+  if (error) {
+
+    console.error(error);
+
+
+    document
+      .getElementById("databaseStatus")
+      .textContent = "ERROR";
+
+
+    container.innerHTML =
+      '<div style="color:#ff4d6d;font-size:12px;">' +
+      '&gt; DATABASE ERROR: ' +
+      escapeHtml(error.message) +
+      '</div>';
+
+    return;
+  }
+
+
+  document
+    .getElementById("databaseStatus")
+    .textContent = "ONLINE";
+
+
+  document
+    .getElementById("resourceCountAdmin")
+    .textContent =
+      data ? data.length : 0;
+
+
+  if (!data || data.length === 0) {
+
+    container.innerHTML =
+      '<div class="database-empty">' +
+      '&gt; database empty.' +
+      '</div>';
+
+    return;
+  }
+
+
+  container.innerHTML =
+    data.map(resource => `
+
+      <div class="resource-item">
+
+        <div class="resource-row">
+
+          <div>
+
+            <div class="resource-title">
+              ${escapeHtml(resource.title)}
+            </div>
+
+            <div class="resource-meta">
+
+              ${escapeHtml(resource.subject)}
+              /
+              ${escapeHtml(resource.chapter)}
+              /
+              ${escapeHtml(resource.type)}
+
+            </div>
+
+          </div>
+
+
+          <div class="resource-access">
+
+            ${escapeHtml(
+              resource.access || "Free"
+            )}
+
+          </div>
+
+        </div>
+
+
+        <div class="resource-description">
+
+          ${escapeHtml(
+            resource.description ||
+            "No description"
+          )}
+
+        </div>
+
+
+        <a
+          class="resource-url"
+          href="${escapeHtml(resource.url)}"
+          target="_blank"
+          rel="noopener"
+        >
+          ↗ ${escapeHtml(resource.url)}
+        </a>
+
+      </div>
+
+    `).join("");
+
+}
+
+
+
+/* =========================================
+   SECURITY — ESCAPE HTML
+   ========================================= */
+
+function escapeHtml(value) {
+
+  return String(value ?? "")
+
+    .replace(
+      /&/g,
+      "&amp;"
+    )
+
+    .replace(
+      /</g,
+      "&lt;"
+    )
+
+    .replace(
+      />/g,
+      "&gt;"
+    )
+
+    .replace(
+      /"/g,
+      "&quot;"
+    )
+
+    .replace(
+      /'/g,
+      "&#039;"
+    );
 
 }
 
