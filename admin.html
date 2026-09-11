@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>10HUB Admin</title>
 
   <link rel="stylesheet" href="style.css">
@@ -13,17 +14,49 @@
 
 <body>
 
-  <main class="container" style="max-width:900px;padding-top:60px;">
+<main class="container" style="max-width:900px;padding-top:60px;">
 
-    <div class="eyebrow">10HUB ADMIN</div>
-    <h1>Resource Manager</h1>
-    <p>Add resources directly to your Supabase database.</p>
+  <div class="eyebrow">10HUB ADMIN</div>
+  <h1>Resource Manager</h1>
+
+  <!-- LOGIN -->
+  <section id="loginSection" class="card" style="padding:24px;margin-top:25px;">
+
+    <h2>Admin Login</h2>
+
+    <input
+      id="email"
+      type="email"
+      placeholder="Admin email"
+    >
+
+    <input
+      id="password"
+      type="password"
+      placeholder="Password"
+    >
+
+    <button onclick="login()">Login</button>
+
+    <p id="loginStatus"></p>
+
+  </section>
+
+
+  <!-- ADMIN PANEL -->
+  <section id="adminSection" style="display:none;">
 
     <section class="card" style="padding:24px;margin-top:25px;">
 
-      <h2>Add Resource</h2>
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <h2>Add Resource</h2>
+        <button onclick="logout()">Logout</button>
+      </div>
 
-      <input id="title" placeholder="Resource title">
+      <input
+        id="title"
+        placeholder="Resource title"
+      >
 
       <select id="subject">
         <option value="science">Science</option>
@@ -33,7 +66,10 @@
         <option value="ai">Artificial Intelligence</option>
       </select>
 
-      <input id="chapter" placeholder="Chapter name">
+      <input
+        id="chapter"
+        placeholder="Chapter name"
+      >
 
       <select id="type">
         <option value="Video">Video</option>
@@ -49,9 +85,15 @@
         <option value="Paid">Paid</option>
       </select>
 
-      <input id="url" placeholder="Resource URL">
+      <input
+        id="url"
+        placeholder="Resource URL"
+      >
 
-      <textarea id="description" placeholder="Short description"></textarea>
+      <textarea
+        id="description"
+        placeholder="Short description"
+      ></textarea>
 
       <button onclick="addResource()">Add Resource</button>
 
@@ -59,53 +101,140 @@
 
     </section>
 
-  </main>
+  </section>
+
+</main>
+
 
 <script>
 
-async function addResource() {
+async function login() {
 
-  const title = document.getElementById("title").value.trim();
-  const subject = document.getElementById("subject").value;
-  const chapter = document.getElementById("chapter").value.trim();
-  const type = document.getElementById("type").value;
-  const access = document.getElementById("access").value;
-  const url = document.getElementById("url").value.trim();
-  const description = document.getElementById("description").value.trim();
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
 
-  const status = document.getElementById("status");
+  const status = document.getElementById("loginStatus");
 
-  if (!title || !chapter || !url) {
-    status.textContent = "Please fill title, chapter and URL.";
+  if (!email || !password) {
+    status.textContent = "Enter your email and password.";
     return;
   }
 
-  status.textContent = "Adding...";
+  status.textContent = "Logging in...";
 
-  const { error } = await db
-    .from("resources")
-    .insert({
-      title: title,
-      subject: subject,
-      chapter: chapter,
-      type: type,
-      access: access,
-      url: url,
-      description: description
+  const { data, error } =
+    await db.auth.signInWithPassword({
+      email: email,
+      password: password
     });
 
   if (error) {
     console.error(error);
-    status.textContent = "Error: " + error.message;
+    status.textContent = "Login failed: " + error.message;
     return;
   }
 
-  status.textContent = "✅ Resource added successfully!";
+  status.textContent = "Login successful!";
+
+  showAdmin();
+
+}
+
+
+function showAdmin() {
+
+  document.getElementById("loginSection").style.display = "none";
+
+  document.getElementById("adminSection").style.display = "block";
+
+}
+
+
+async function logout() {
+
+  await db.auth.signOut();
+
+  document.getElementById("adminSection").style.display = "none";
+
+  document.getElementById("loginSection").style.display = "block";
+
+}
+
+
+async function addResource() {
+
+  const title =
+    document.getElementById("title").value.trim();
+
+  const subject =
+    document.getElementById("subject").value;
+
+  const chapter =
+    document.getElementById("chapter").value.trim();
+
+  const type =
+    document.getElementById("type").value;
+
+  const access =
+    document.getElementById("access").value;
+
+  const url =
+    document.getElementById("url").value.trim();
+
+  const description =
+    document.getElementById("description").value.trim();
+
+  const status =
+    document.getElementById("status");
+
+
+  if (!title || !chapter || !url) {
+
+    status.textContent =
+      "Please fill title, chapter and URL.";
+
+    return;
+  }
+
+
+  status.textContent = "Adding...";
+
+
+  const { data, error } =
+    await db
+      .from("resources")
+      .insert({
+        title: title,
+        subject: subject,
+        chapter: chapter,
+        type: type,
+        access: access,
+        url: url,
+        description: description
+      })
+      .select();
+
+
+  if (error) {
+
+    console.error(error);
+
+    status.textContent =
+      "Error: " + error.message;
+
+    return;
+  }
+
+
+  status.textContent =
+    "✅ Resource added successfully!";
+
 
   document.getElementById("title").value = "";
   document.getElementById("chapter").value = "";
   document.getElementById("url").value = "";
   document.getElementById("description").value = "";
+
 }
 
 </script>
