@@ -1,3 +1,7 @@
+// ================================
+// SUPABASE RESOURCE LOADER
+// ================================
+
 async function loadSupabaseResources() {
   const { data, error } = await db
     .from("resources")
@@ -9,176 +13,561 @@ async function loadSupabaseResources() {
     return;
   }
 
-  if (data) {
-    resources = [...data, ...resources];
+  if (data && data.length > 0) {
+    // Avoid duplicate resources if the function runs again
+    const existingIds = new Set(resources.map(r => String(r.id)));
+
+    const newResources = data.filter(
+      r => !existingIds.has(String(r.id))
+    );
+
+    resources = [...newResources, ...resources];
   }
 
   renderResources();
 }
-let saved = JSON.parse(localStorage.getItem("10hub_saved") || "[]");
-let completed = JSON.parse(localStorage.getItem("10hub_completed") || "[]");
+
+
+// ================================
+// LOCAL STORAGE
+// ================================
+
+let saved = JSON.parse(
+  localStorage.getItem("10hub_saved") || "[]"
+);
+
+let completed = JSON.parse(
+  localStorage.getItem("10hub_completed") || "[]"
+);
+
+
+// ================================
+// CURRENT STATE
+// ================================
+
 let activeFilter = "All";
 let selectedSubject = "all";
 let selectedChapter = "All";
 
+
+// ================================
+// SHORT SELECTOR
+// ================================
+
 const $ = (s) => document.querySelector(s);
 
-function renderSubjects(){
+
+// ================================
+// RENDER SUBJECTS
+// ================================
+
+function renderSubjects() {
+
   const el = $("#subjectGrid");
-  if(!el) return;
+
+  if (!el) return;
+
   el.innerHTML = subjects.map(s => `
-    <button class="subject-card" onclick="openSubject('${s.id}')">
-      <div class="subject-icon">${s.icon}</div>
-      <div class="subject-copy">
-        <h3>${s.name}</h3>
-        <p>${s.description}</p>
+    <button
+      class="subject-card"
+      onclick="openSubject('${s.id}')"
+    >
+
+      <div class="subject-icon">
+        ${s.icon}
       </div>
-      <span class="arrow">→</span>
+
+      <div class="subject-copy">
+
+        <h3>${s.name}</h3>
+
+        <p>${s.description}</p>
+
+      </div>
+
+      <span class="arrow">
+        →
+      </span>
+
     </button>
   `).join("");
 }
 
-function openSubject(id){
+
+// ================================
+// OPEN SUBJECT
+// ================================
+
+function openSubject(id) {
+
   selectedSubject = id;
   selectedChapter = "All";
   activeFilter = "All";
 
-  document.querySelectorAll(".filter").forEach(b => b.classList.remove("active"));
-  document.querySelector('.filter[data-filter="All"]')?.classList.add("active");
+  document
+    .querySelectorAll(".filter")
+    .forEach(b => b.classList.remove("active"));
+
+  document
+    .querySelector('.filter[data-filter="All"]')
+    ?.classList.add("active");
 
   const s = subjects.find(x => x.id === id);
+
   const panel = $("#chapterPanel");
   const title = $("#chapterTitle");
   const chaptersEl = $("#chapters");
 
-  if(!panel || !title || !chaptersEl) return;
+  if (!panel || !title || !chaptersEl) return;
 
-  title.textContent = (s ? s.name : "Subject") + " Chapters";
+  title.textContent =
+    (s ? s.name : "Subject") + " Chapters";
+
   const list = getChapterList(id);
 
   chaptersEl.innerHTML = list.map(ch => `
-    <button class="chapter-pill" onclick="openChapter(${JSON.stringify(id)}, ${JSON.stringify(ch)})">
+    <button
+      class="chapter-pill"
+      onclick="openChapter(
+        ${JSON.stringify(id)},
+        ${JSON.stringify(ch)}
+      )"
+    >
       ${ch}
-      <span>→</span>
+
+      <span>
+        →
+      </span>
+
     </button>
   `).join("");
 
   panel.classList.remove("hidden");
-  $("#resourcesTitle").textContent = (s ? s.name : "Subject") + " Resources";
+
+  if ($("#resourcesTitle")) {
+    $("#resourcesTitle").textContent =
+      (s ? s.name : "Subject") + " Resources";
+  }
+
   renderResources();
 
-  panel.scrollIntoView({behavior:"smooth", block:"start"});
+  panel.scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+  });
 }
 
-function openChapter(subject, chapter){
+
+// ================================
+// OPEN CHAPTER
+// ================================
+
+function openChapter(subject, chapter) {
+
   selectedSubject = subject;
   selectedChapter = chapter;
-  const s = subjects.find(x => x.id === subject);
-  $("#resourcesTitle").textContent = chapter + " Resources";
+
+  if ($("#resourcesTitle")) {
+    $("#resourcesTitle").textContent =
+      chapter + " Resources";
+  }
+
   renderResources();
-  $("#resources").scrollIntoView({behavior:"smooth", block:"start"});
+
+  $("#resources")?.scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+  });
 }
 
-function renderResources(){
-  const q = ($("#searchInput")?.value || "").toLowerCase().trim();
 
-  const list = resources.filter(r =>
-    (selectedSubject === "all" || r.subject === "all" || r.subject === selectedSubject) &&
-    (selectedChapter === "All" || r.chapter === "All" || r.chapter === selectedChapter) &&
-    (activeFilter === "All" || r.type === activeFilter) &&
-    (!q || (r.title + " " + r.description + " " + r.chapter).toLowerCase().includes(q))
-  );
+// ================================
+// RENDER RESOURCES
+// ================================
+
+function renderResources() {
+
+  const q =
+    ($("#searchInput")?.value || "")
+      .toLowerCase()
+      .trim();
+
+  const list = resources.filter(r => {
+
+    const subjectMatch =
+      selectedSubject === "all" ||
+      r.subject === "all" ||
+      r.subject === selectedSubject;
+
+    const chapterMatch =
+      selectedChapter === "All" ||
+      r.chapter === "All" ||
+      r.chapter === selectedChapter;
+
+    const filterMatch =
+      activeFilter === "All" ||
+      r.type === activeFilter;
+
+    const searchMatch =
+      !q ||
+      (
+        (r.title || "") + " " +
+        (r.description || "") + " " +
+        (r.chapter || "")
+      )
+        .toLowerCase()
+        .includes(q);
+
+    return (
+      subjectMatch &&
+      chapterMatch &&
+      filterMatch &&
+      searchMatch
+    );
+  });
+
 
   const el = $("#resourceGrid");
-  if(!el) return;
 
-  el.innerHTML = list.length ? list.map(r => `
-    <article class="resource-card">
-      <div class="resource-top">
-        <span class="tag">${r.type}</span>
-        <button class="save ${saved.includes(r.id) ? "saved" : ""}" onclick="toggleSave('${r.id}')">
-          ${saved.includes(r.id) ? "★" : "☆"}
-        </button>
-      </div>
-      <h3>${r.title}</h3>
-      <p>${r.description}</p>
-      <div class="resource-meta">
-        <span>${r.chapter}</span>
-        <span>${r.free ? "Free" : "Paid"}</span>
-      </div>
-      <a class="resource-link" href="${r.url}" target="_blank" rel="noopener">Open resource ↗</a>
-    </article>
-  `).join("") : `
-    <div class="empty">
-      No resources yet for this chapter.<br>
-      Add resources in <b>data/resources.js</b>.
-    </div>
-  `;
+  if (!el) return;
 
-  $("#resourceCount").textContent = `${list.length} resource${list.length === 1 ? "" : "s"}`;
+
+  el.innerHTML = list.length
+
+    ? list.map(r => {
+
+        const resourceId =
+          String(r.id);
+
+        const isSaved =
+          saved.includes(resourceId) ||
+          saved.includes(r.id);
+
+        // Supabase uses "access"
+        // Older local resources may use "free"
+        const access =
+          r.access ??
+          (r.free ? "Free" : "Paid");
+
+        return `
+
+          <article class="resource-card">
+
+            <div class="resource-top">
+
+              <span class="tag">
+                ${r.type}
+              </span>
+
+              <button
+                class="save ${isSaved ? "saved" : ""}"
+                onclick="toggleSave('${resourceId}')"
+              >
+                ${isSaved ? "★" : "☆"}
+              </button>
+
+            </div>
+
+
+            <h3>
+              ${r.title}
+            </h3>
+
+
+            <p>
+              ${r.description || ""}
+            </p>
+
+
+            <div class="resource-meta">
+
+              <span>
+                ${r.chapter}
+              </span>
+
+              <span>
+                ${access}
+              </span>
+
+            </div>
+
+
+            <a
+              class="resource-link"
+              href="${r.url}"
+              target="_blank"
+              rel="noopener"
+            >
+              Open resource ↗
+            </a>
+
+          </article>
+
+        `;
+
+      }).join("")
+
+    : `
+
+        <div class="empty">
+
+          No resources yet for this chapter.
+
+          <br>
+
+          Add resources from the
+          <b>Admin</b> page.
+
+        </div>
+
+      `;
+
+
+  if ($("#resourceCount")) {
+
+    $("#resourceCount").textContent =
+      `${list.length} resource${list.length === 1 ? "" : "s"}`;
+
+  }
+
   updateStats();
 }
 
-function toggleSave(id){
-  saved = saved.includes(id) ? saved.filter(x => x !== id) : [...saved, id];
-  localStorage.setItem("10hub_saved", JSON.stringify(saved));
+
+// ================================
+// SAVE / UNSAVE RESOURCE
+// ================================
+
+function toggleSave(id) {
+
+  id = String(id);
+
+  saved = saved.map(String);
+
+  saved = saved.includes(id)
+
+    ? saved.filter(x => x !== id)
+
+    : [...saved, id];
+
+
+  localStorage.setItem(
+    "10hub_saved",
+    JSON.stringify(saved)
+  );
+
+
   renderResources();
 }
 
-function updateStats(){
-  if($("#bookmarkCount")) $("#bookmarkCount").textContent = saved.length;
-  if($("#progressCount")) $("#progressCount").textContent = completed.length;
+
+// ================================
+// UPDATE STATS
+// ================================
+
+function updateStats() {
+
+  if ($("#bookmarkCount")) {
+
+    $("#bookmarkCount").textContent =
+      saved.length;
+
+  }
+
+  if ($("#progressCount")) {
+
+    $("#progressCount").textContent =
+      completed.length;
+
+  }
 }
 
-function goAll(){
+
+// ================================
+// SHOW ALL RESOURCES
+// ================================
+
+function goAll() {
+
   selectedSubject = "all";
   selectedChapter = "All";
-  $("#chapterPanel")?.classList.add("hidden");
-  $("#resourcesTitle").textContent = "Featured resources";
+
+  $("#chapterPanel")
+    ?.classList.add("hidden");
+
+  if ($("#resourcesTitle")) {
+
+    $("#resourcesTitle").textContent =
+      "Featured resources";
+
+  }
+
   renderResources();
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  renderSubjects();
-  renderResources();
-  updateStats();
 
-  $("#searchInput")?.addEventListener("input", renderResources);
+// ================================
+// PAGE STARTUP
+// ================================
 
-  document.querySelectorAll(".filter").forEach(btn => {
-    btn.addEventListener("click", () => {
-      document.querySelectorAll(".filter").forEach(b => b.classList.remove("active"));
-      btn.classList.add("active");
-      activeFilter = btn.dataset.filter;
-      renderResources();
-    });
-  });
+document.addEventListener(
+  "DOMContentLoaded",
+  () => {
 
-  document.querySelectorAll(".quick-links button").forEach(btn => {
-    btn.addEventListener("click", () => {
-      const filter = btn.dataset.filter;
-      const matching = document.querySelector(`.filter[data-filter="${filter}"]`);
-      matching?.click();
-      $("#resources")?.scrollIntoView({behavior:"smooth"});
-    });
-  });
+    // Render built-in subjects/resources
+    renderSubjects();
+    renderResources();
+    updateStats();
 
-  $("#profileBtn")?.addEventListener("click", () => $("#profileModal")?.classList.remove("hidden"));
-  $("#closeModal")?.addEventListener("click", () => $("#profileModal")?.classList.add("hidden"));
 
-  $("#saveName")?.addEventListener("click", () => {
-    localStorage.setItem("10hub_name", $("#nameInput")?.value.trim() || "");
-    $("#profileModal")?.classList.add("hidden");
-  });
+    // Search
+    $("#searchInput")
+      ?.addEventListener(
+        "input",
+        renderResources
+      );
 
-  const name = localStorage.getItem("10hub_name");
-  if(name && $("#nameInput")) $("#nameInput").value = name;
 
-  document.addEventListener("keydown", e => {
-    if((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k"){
-      e.preventDefault();
-      $("#searchInput")?.focus();
+    // Resource filters
+    document
+      .querySelectorAll(".filter")
+      .forEach(btn => {
+
+        btn.addEventListener(
+          "click",
+          () => {
+
+            document
+              .querySelectorAll(".filter")
+              .forEach(b =>
+                b.classList.remove("active")
+              );
+
+            btn.classList.add("active");
+
+            activeFilter =
+              btn.dataset.filter;
+
+            renderResources();
+
+          }
+        );
+
+      });
+
+
+    // Quick links
+    document
+      .querySelectorAll(".quick-links button")
+      .forEach(btn => {
+
+        btn.addEventListener(
+          "click",
+          () => {
+
+            const filter =
+              btn.dataset.filter;
+
+            const matching =
+              document.querySelector(
+                `.filter[data-filter="${filter}"]`
+              );
+
+            matching?.click();
+
+            $("#resources")
+              ?.scrollIntoView({
+                behavior: "smooth"
+              });
+
+          }
+        );
+
+      });
+
+
+    // Profile modal
+    $("#profileBtn")
+      ?.addEventListener(
+        "click",
+        () =>
+          $("#profileModal")
+            ?.classList.remove("hidden")
+      );
+
+
+    $("#closeModal")
+      ?.addEventListener(
+        "click",
+        () =>
+          $("#profileModal")
+            ?.classList.add("hidden")
+      );
+
+
+    // Save name
+    $("#saveName")
+      ?.addEventListener(
+        "click",
+        () => {
+
+          const name =
+            $("#nameInput")
+              ?.value
+              .trim() || "";
+
+          localStorage.setItem(
+            "10hub_name",
+            name
+          );
+
+          $("#profileModal")
+            ?.classList.add("hidden");
+
+        }
+      );
+
+
+    // Load saved name
+    const name =
+      localStorage.getItem("10hub_name");
+
+    if (
+      name &&
+      $("#nameInput")
+    ) {
+
+      $("#nameInput").value = name;
+
     }
-  });
-});
+
+
+    // Ctrl + K search shortcut
+    document.addEventListener(
+      "keydown",
+      e => {
+
+        if (
+          (e.ctrlKey || e.metaKey) &&
+          e.key.toLowerCase() === "k"
+        ) {
+
+          e.preventDefault();
+
+          $("#searchInput")?.focus();
+
+        }
+
+      }
+    );
+
+  }
+);
+
+
+// ================================
+// LOAD SUPABASE RESOURCES
+// ================================
+
 loadSupabaseResources();
+  
