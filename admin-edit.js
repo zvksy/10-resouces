@@ -5,19 +5,28 @@ window.editResource = async function (id) {
   const description = prompt("Enter new description:");
   if (description === null) return;
 
-  const { error } = await db
+  const { data, error } = await db
     .from("resources")
     .update({
       title: title,
       description: description
     })
-    .eq("id", id);
+    .eq("id", id)
+    .select();
+
+  console.log("EDIT RESULT:", data);
+  console.log("EDIT ERROR:", error);
 
   if (error) {
     alert("Edit failed: " + error.message);
-    console.error(error);
     return;
   }
 
+  if (!data || data.length === 0) {
+    alert("0 rows updated — RLS is blocking this update.");
+    return;
+  }
+
+  alert("Resource updated!");
   loadAdminResources();
 };
