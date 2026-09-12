@@ -1642,7 +1642,12 @@ async function loadAdminResources() {
 
         </div>
 
-
+<button
+  onclick="editResource('${resource.id}')"
+  style="margin-top:10px; margin-right:5px;"
+>
+  EDIT
+</button>
         <a
   class="resource-url"
   href="${escapeHtml(resource.url)}"
