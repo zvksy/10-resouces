@@ -1644,15 +1644,22 @@ async function loadAdminResources() {
 
 
         <a
-          class="resource-url"
-          href="${escapeHtml(resource.url)}"
-          target="_blank"
-          rel="noopener"
-        >
-          ↗ ${escapeHtml(resource.url)}
-        </a>
+  class="resource-url"
+  href="${escapeHtml(resource.url)}"
+  target="_blank"
+  rel="noopener"
+>
+  ↗ ${escapeHtml(resource.url)}
+</a>
 
-      </div>
+<button
+  onclick="deleteResource('${resource.id}')"
+  style="margin-top:10px;"
+>
+  DELETE
+</button>
+
+</div>
 
     `).join("");
 
