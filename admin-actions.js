@@ -1,6 +1,4 @@
 window.deleteResource = async function (id) {
-  if (!confirm("Delete this resource?")) return;
-
   const { error } = await db
     .from("resources")
     .delete()
@@ -12,9 +10,5 @@ window.deleteResource = async function (id) {
     return;
   }
 
-  alert("Resource deleted.");
-
-  if (typeof loadAdminResources === "function") {
-    loadAdminResources();
-  }
+  loadAdminResources();
 };
