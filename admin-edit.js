@@ -14,19 +14,16 @@ window.editResource = async function (id) {
     .eq("id", id)
     .select();
 
-  console.log("EDIT RESULT:", data);
-  console.log("EDIT ERROR:", error);
-
   if (error) {
-    alert("Edit failed: " + error.message);
+    alert("EDIT ERROR: " + error.message);
     return;
   }
 
   if (!data || data.length === 0) {
-    alert("0 rows updated — RLS is blocking this update.");
+    alert("EDIT: 0 rows updated");
     return;
   }
 
-  alert("Resource updated!");
+  alert("EDIT SUCCESS");
   loadAdminResources();
 };
